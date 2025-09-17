@@ -2,148 +2,164 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🌌 Star Map of My Life</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Calculator</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
+      background: #282c34;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: white;
     }
-
-    .sky {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
+    .calculator {
+      background: #3b3f47;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #0d6efd;
+      width: 320px;
     }
-
-    .star {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      background: white;
-      border-radius: 50%;
-      box-shadow: 0 0 10px white;
-      cursor: pointer;
-      animation: twinkle 2s infinite ease-in-out;
+    .display {
+      background: #22272e;
+      padding: 15px;
+      font-size: 2rem;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: right;
+      min-height: 50px;
+      overflow-x: auto;
     }
-
-    @keyframes twinkle {
-      0%, 100% {
-        opacity: 0.8;
-      }
-      50% {
-        opacity: 0.2;
-      }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
     }
-
-    .popup {
-      position: absolute;
-      background: rgba(0, 0, 0, 0.85);
-      padding: 10px 15px;
+    button {
+      font-size: 1.5rem;
+      padding: 15px;
+      border: none;
       border-radius: 8px;
-      border: 1px solid #fff;
-      max-width: 250px;
-      z-index: 10;
-    }
-
-    .popup h3 {
-      margin: 0 0 5px;
-      font-size: 16px;
-      color: #ffd700;
-    }
-
-    .popup p {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .close-btn {
-      color: red;
-      position: absolute;
-      top: 4px;
-      right: 8px;
+      background: #444a54;
+      color: white;
       cursor: pointer;
-      font-weight: bold;
+      transition: background 0.2s ease;
+      user-select: none;
+    }
+    button:hover {
+      background: #0d6efd;
+    }
+    .operator {
+      background: #0d6efd;
+    }
+    .operator:hover {
+      background: #0a58ca;
+    }
+    .span-two {
+      grid-column: span 2;
     }
   </style>
 </head>
 <body>
 
-  <div class="sky" id="sky"></div>
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="buttons">
+      <button id="clear">C</button>
+      <button id="backspace">←</button>
+      <button class="operator">/</button>
+      <button class="operator">*</button>
+
+      <button>7</button>
+      <button>8</button>
+      <button>9</button>
+      <button class="operator">-</button>
+
+      <button>4</button>
+      <button>5</button>
+      <button>6</button>
+      <button class="operator">+</button>
+
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button id="equals" class="operator span-two">=</button>
+
+      <button class="span-two">0</button>
+      <button>.</button>
+    </div>
+  </div>
 
   <script>
-    const memories = [
-      {
-        top: "20%",
-        left: "30%",
-        title: "Started School",
-        description: "The day I started my first day at school. Everything was new and exciting!"
-      },
-      {
-        top: "40%",
-        left: "60%",
-        title: "First Friend",
-        description: "Met my first real friend. We shared snacks and laughs on the playground."
-      },
-      {
-        top: "65%",
-        left: "20%",
-        title: "Won a Competition",
-        description: "That moment of standing on stage after winning a science fair!"
-      },
-      {
-        top: "80%",
-        left: "50%",
-        title: "Graduation Day",
-        description: "A proud moment with my family cheering me on."
-      },
-      {
-        top: "35%",
-        left: "80%",
-        title: "Started Coding",
-        description: "Wrote my first line of HTML. A new world opened up!"
-      }
-    ];
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('button');
+    let currentInput = '';
 
-    const sky = document.getElementById('sky');
+    function updateDisplay() {
+      display.textContent = currentInput || '0';
+    }
 
-    memories.forEach((memory, index) => {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.top = memory.top;
-      star.style.left = memory.left;
-      star.title = memory.title;
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const btnValue = button.textContent;
 
-      star.addEventListener('click', (e) => {
-        showPopup(memory, e.clientX, e.clientY);
+        if (button.id === 'clear') {
+          currentInput = '';
+          updateDisplay();
+          return;
+        }
+
+        if (button.id === 'backspace') {
+          currentInput = currentInput.slice(0, -1);
+          updateDisplay();
+          return;
+        }
+
+        if (button.id === 'equals') {
+          try {
+            // Evaluate the expression safely
+            // Replace × and ÷ with * and /
+            // Use Function constructor to evaluate expression
+            let result = Function('"use strict";return (' + currentInput + ')')();
+            currentInput = result.toString();
+          } catch {
+            currentInput = 'Error';
+          }
+          updateDisplay();
+          return;
+        }
+
+        // Avoid multiple operators in a row
+        const operators = ['+', '-', '*', '/'];
+        const lastChar = currentInput.slice(-1);
+
+        if (operators.includes(btnValue)) {
+          if (currentInput === '' || operators.includes(lastChar)) {
+            // Do not allow operator if empty input or last char is operator
+            return;
+          }
+        }
+
+        // Only allow one decimal point in a number
+        if (btnValue === '.') {
+          // Split by operators to get current number segment
+          const parts = currentInput.split(/[\+\-\*\/]/);
+          const lastNumber = parts[parts.length - 1];
+          if (lastNumber.includes('.')) {
+            return;
+          }
+          if (lastNumber === '') {
+            currentInput += '0'; // Add leading zero before decimal if needed
+          }
+        }
+
+        currentInput += btnValue;
+        updateDisplay();
       });
-
-      sky.appendChild(star);
     });
 
-    function showPopup(memory, x, y) {
-      // Remove existing popups
-      const existing = document.querySelector('.popup');
-      if (existing) existing.remove();
-
-      const popup = document.createElement('div');
-      popup.className = 'popup';
-      popup.style.top = (y + 10) + 'px';
-      popup.style.left = (x + 10) + 'px';
-
-      popup.innerHTML = `
-        <span class="close-btn" onclick="this.parentElement.remove()">×</span>
-        <h3>${memory.title}</h3>
-        <p>${memory.description}</p>
-      `;
-
-      document.body.appendChild(popup);
-    }
   </script>
+
 </body>
 </html>
